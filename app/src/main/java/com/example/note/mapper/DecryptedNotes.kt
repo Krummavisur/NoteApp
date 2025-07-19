@@ -1,13 +1,13 @@
 package com.example.note.mapper
 
-import com.example.note.data.local.NoteEntity
-import com.example.note.domain.DecryptedNote
-import com.example.note.encryption.CryptoManager
+import com.example.note.data.local.NotesEntity
+import com.example.note.domain.DecryptedNotes
+import com.example.note.data.encryption.CryptoManager
 
-fun NoteEntity.toDecryptedNote(cryptoManager: CryptoManager): DecryptedNote? {
+fun NotesEntity.toDecryptedNote(cryptoManager: CryptoManager): DecryptedNotes? {
     return try {
         val decryptedContent = cryptoManager.decryptText(encryptedContent)
-        DecryptedNote(
+        DecryptedNotes(
             id = id,
             title = title,
             content = decryptedContent,

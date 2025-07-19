@@ -2,11 +2,11 @@ package com.example.note.hilt
 
 import android.content.Context
 import androidx.room.Room
-import com.example.note.data.local.NoteAppDatabase
-import com.example.note.data.local.NoteDao
+import com.example.note.data.local.NotesAppDatabase
+import com.example.note.data.local.NotesDao
 import com.example.note.data.repository.LocalNotesRepository
 import com.example.note.data.repository.NotesRepository
-import com.example.note.encryption.CryptoManager
+import com.example.note.data.encryption.CryptoManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,21 +24,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): NoteAppDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): NotesAppDatabase {
         return Room.databaseBuilder(
             context,
-            NoteAppDatabase::class.java,
+            NotesAppDatabase::class.java,
             "note_db"
         ).build()
     }
 
     @Provides
-    fun provideNoteDao(db: NoteAppDatabase): NoteDao = db.noteDao()
+    fun provideNoteDao(db: NotesAppDatabase): NotesDao = db.noteDao()
 
     @Provides
     @Singleton
     fun provideNotesRepository(
-        dao: NoteDao,
+        dao: NotesDao,
         cryptoManager: CryptoManager
     ): NotesRepository {
         return LocalNotesRepository(dao, cryptoManager)

@@ -1,4 +1,4 @@
-package com.example.note.encryption
+package com.example.note.data.encryption
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties

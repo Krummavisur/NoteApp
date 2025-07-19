@@ -5,24 +5,23 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.note.data.local.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface NoteDao {
+interface NotesDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    suspend fun insertNoteToFavorites(note: NoteEntity)
+    suspend fun insertNoteToFavorites(note: NotesEntity)
 
     @Delete
-    suspend fun deleteNoteFromFavorites(noteDao: NoteEntity)
+    suspend fun deleteNoteFromFavorites(noteDao: NotesEntity)
 
     @Query("SELECT * FROM note")
-    fun getAllFavoriteNotes(): Flow<List<NoteEntity>>
+    fun getAllFavoriteNotes(): Flow<List<NotesEntity>>
 
 
     @Query("SELECT * FROM note WHERE id = :noteId")
-    suspend fun getNoteById(noteId: Int): NoteEntity?
+    suspend fun getNoteById(noteId: Int): NotesEntity?
 
     @Query("SELECT * FROM note ORDER BY timestamp DESC")
-    fun getAllNotes(): Flow<List<NoteEntity>>
+    fun getAllNotes(): Flow<List<NotesEntity>>
 }
