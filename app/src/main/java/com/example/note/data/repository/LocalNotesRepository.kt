@@ -42,4 +42,10 @@ class LocalNotesRepository(
         val note = notesDao.getNoteById(noteId)
         note?.let { notesDao.deleteNoteFromFavorites(it) }
     }
+
+    override suspend fun toggleFavorite(noteId: Int) {
+        val note = notesDao.getNoteById(noteId) ?: return
+        val updatedNote = note.copy(isFavorite = !note.isFavorite)
+        notesDao.insertNoteToFavorites(updatedNote)
+    }
 }

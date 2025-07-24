@@ -2,6 +2,7 @@ package com.example.note.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.note.data.repository.NotesRepository
 import com.example.note.ui.screens.NotesMainScreenUiState
 import com.example.note.use_cases.AddNotesUseCase
 import com.example.note.use_cases.DeleteNotesUseCase
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class NotesMainScreenViewModel @Inject constructor(
     private val searchNotesUseCase: SearchNotesUseCase,
     private val addNotesUseCase: AddNotesUseCase,
-    private val deleteNotesUseCase: DeleteNotesUseCase
+    private val deleteNotesUseCase: DeleteNotesUseCase,
+    private val repository: NotesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotesMainScreenUiState())
@@ -69,5 +71,11 @@ class NotesMainScreenViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    fun toggleFavorite(noteId: Int) {
+        viewModelScope.launch {
+            repository.toggleFavorite(noteId)
+        }
     }
 }

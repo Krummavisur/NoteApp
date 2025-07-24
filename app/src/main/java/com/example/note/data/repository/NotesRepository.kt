@@ -9,4 +9,5 @@ interface NotesRepository {
     suspend fun getNoteById(id: Int): DecryptedNotes?
     suspend fun addOrUpdateNote(title: String, content: String, isFavorite: Boolean = false)
     suspend fun deleteNote(noteId: Int)
+    suspend fun toggleFavorite(noteId: Int)
 }

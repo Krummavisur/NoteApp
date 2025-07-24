@@ -8,11 +8,11 @@ import com.example.note.data.repository.LocalNotesRepository
 import com.example.note.data.repository.NotesRepository
 import com.example.note.data.encryption.CryptoManager
 import dagger.Module
+import javax.inject.Singleton
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
