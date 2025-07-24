@@ -27,7 +27,7 @@ class LocalNotesRepository(
         return notesDao.getNoteById(id)?.toDecryptedNote(cryptoManager)
     }
 
-    override suspend fun addOrUpdateNote(title: String, content: String, isFavorite: Boolean) {
+    override suspend fun addNote(title: String, content: String, isFavorite: Boolean) {
         val encrypted = cryptoManager.encryptText(content)
         val note = NotesEntity(
             title = title,
@@ -46,6 +46,25 @@ class LocalNotesRepository(
     override suspend fun toggleFavorite(noteId: Int) {
         val note = notesDao.getNoteById(noteId) ?: return
         val updatedNote = note.copy(isFavorite = !note.isFavorite)
+        notesDao.insertNoteToFavorites(updatedNote)
+    }
+
+    override suspend fun updateNote(
+        noteId: Int,
+        title: String,
+        content: String,
+        isFavorite: Boolean
+    ) {
+        val existingNote = notesDao.getNoteById(noteId) ?: return
+        val encrypted = cryptoManager.encryptText(content)
+
+        val updatedNote = existingNote.copy(
+            title = title,
+            encryptedContent = encrypted,
+            isFavorite = isFavorite,
+            timestamp = System.currentTimeMillis()
+        )
+
         notesDao.insertNoteToFavorites(updatedNote)
     }
 }

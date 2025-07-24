@@ -40,10 +40,10 @@ class NotesDetailsScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveNote(title: String, content: String, isFavorite: Boolean = false) {
+    fun saveNote(noteId: Int?, title: String, content: String, isFavorite: Boolean = false) {
         viewModelScope.launch {
             try {
-                addNotesUseCase(title, content, isFavorite)
+                addNotesUseCase(title, content, isFavorite, noteId)
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             }

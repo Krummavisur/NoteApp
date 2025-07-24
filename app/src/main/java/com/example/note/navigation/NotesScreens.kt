@@ -164,11 +164,13 @@ fun NotesApp(
                     contentPadding = innerPadding
                 )
             }
-            composable(NotesScreens.DetailsScreen.route) {
+            composable(NotesScreens.DetailsScreen.route) { backStackEntry ->
                 val notesDetailsScreenViewModel: NotesDetailsScreenViewModel = hiltViewModel()
+                val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull() ?: return@composable
                 NotesDetailsScreen(
                     viewModel = notesDetailsScreenViewModel,
-                    contentPadding = innerPadding
+                    contentPadding = innerPadding,
+                    noteId = noteId
                     )
                 }
             }
