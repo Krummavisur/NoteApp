@@ -1,10 +1,13 @@
 package com.example.note.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,52 +39,68 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.note.domain.DecryptedNotes
 import com.example.note.ui.viewmodels.NotesMainScreenViewModel
 
 
 @Composable
 fun NotesMainScreen(
-    viewModel: NotesMainScreenViewModel = hiltViewModel(),
+    viewModel: NotesMainScreenViewModel,
     onNoteClick: (Int) -> Unit,
-    contentPadding: PaddingValues = PaddingValues(),
+    isSearchActive: Boolean,
+    contentPadding: PaddingValues
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     var showAddDialog by remember { mutableStateOf(false) }
 
-    if (showAddDialog) {
-        AddNoteDialog(
-            onDismiss = { showAddDialog = false },
-            onAdd = { title, content ->
-                viewModel.addNote(title, content)
-                showAddDialog = false
-            }
-        )
-    }
-
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
-            }
-        }
-    ) { padding ->
-        LazyColumn(
-            contentPadding = padding
-        ) {
-            items(uiState.notes) { note ->
-                NoteItem(
-                    note = note,
-                    onClick = { onNoteClick(note.id) },
-                    onDeleteClick = { viewModel.deleteNote(note.id) },
-                    onFavoriteClick = { viewModel.toggleFavorite(note.id) }
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(contentPadding)) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (isSearchActive) {
+                SearchNote(
+                    uiState   = uiState,
+                    onQueryChange = viewModel::onSearchQueryChanged
                 )
             }
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(uiState.notes) { note ->
+                    NoteItem(
+                        note  = note,
+                        onClick = { onNoteClick(note.id) },
+                        onDeleteClick = { viewModel.deleteNote(note.id) },
+                        onFavoriteClick = { viewModel.toggleFavorite(note.id) }
+                    )
+                }
+            }
+        }
+
+        FloatingActionButton(
+            onClick = { showAddDialog = true },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
+        }
+
+        if (showAddDialog) {
+            AddNoteDialog(
+                onDismiss = { showAddDialog = false },
+                onAdd = { title, content ->
+                    viewModel.addNote(title, content)
+                    showAddDialog = false
+                }
+            )
         }
     }
 }
+
 
 @Composable
 fun NoteItem(
@@ -181,5 +199,21 @@ fun AddNoteDialog(
                 Text("Отмена")
             }
         }
+    )
+}
+
+@Composable
+fun SearchNote(
+    uiState: NotesMainScreenUiState,
+    onQueryChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = uiState.searchQuery,
+        onValueChange = onQueryChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        placeholder = { Text("Поиск...") },
+        singleLine = true
     )
 }

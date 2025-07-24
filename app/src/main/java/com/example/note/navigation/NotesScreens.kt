@@ -1,24 +1,33 @@
 package com.example.note.navigation
 
+import android.graphics.drawable.Icon
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.note.ui.screens.NotesDetailsScreen
@@ -45,7 +54,9 @@ enum class NotesScreens (val route: String) {
 fun NotesTopAppBar(
     title: String,
     showBackButton: Boolean,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    showSearchIcon: Boolean,
+    onSearchIconClick: () -> Unit
 ) {
     TopAppBar(
         title = { Text(title) },
@@ -59,6 +70,19 @@ fun NotesTopAppBar(
                 }
             }
         },
+        actions = {
+            if (showSearchIcon) {
+                IconButton(onClick = onSearchIconClick) {
+                    Icon(
+                        contentDescription = "Поиск",
+                        imageVector = Icons.Filled.Search,
+                        tint = Color.LightGray,
+                        modifier = Modifier
+                            .size(40.dp)
+                    )
+                }
+            }
+        },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background
         )
@@ -67,10 +91,13 @@ fun NotesTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun NotesApp(
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberAnimatedNavController(),
 ) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = NotesScreens.fromRoute(currentBackStackEntry?.destination?.route)
+    val viewModel: NotesMainScreenViewModel = hiltViewModel()
+    val isSearchActive by viewModel.isSearchActive.collectAsState()
     Scaffold(
         topBar = {
             when (currentScreen) {
@@ -78,7 +105,9 @@ fun NotesApp(
                     NotesTopAppBar(
                         title = "Заметки",
                         showBackButton = false,
-                        onBackClick = {}
+                        onBackClick = {},
+                        showSearchIcon = true,
+                        onSearchIconClick = {viewModel.toggleSearch()}
                     )
                 }
 
@@ -86,12 +115,17 @@ fun NotesApp(
                     NotesTopAppBar(
                         title = "Заметки",
                         showBackButton = true,
-                        onBackClick = { navController.popBackStack() }
+                        onBackClick = { navController.popBackStack() },
+                        showSearchIcon = false,
+                        onSearchIconClick = {}
                     )
                 }
             }
         }
-    ) { padding ->
+    ) { innerPadding ->
+        Surface (
+            modifier = modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background) {
         AnimatedNavHost(
             navController = navController,
             startDestination = NotesScreens.MainScreen.route,
@@ -126,15 +160,17 @@ fun NotesApp(
                     onNoteClick = { noteId ->
                         navController.navigate(route = "details/${noteId}") },
                     viewModel = notesMainScreenViewModel,
-                    contentPadding = padding
+                    isSearchActive = isSearchActive,
+                    contentPadding = innerPadding
                 )
             }
             composable(NotesScreens.DetailsScreen.route) {
                 val notesDetailsScreenViewModel: NotesDetailsScreenViewModel = hiltViewModel()
                 NotesDetailsScreen(
                     viewModel = notesDetailsScreenViewModel,
-                    contentPadding = padding
-                )
+                    contentPadding = innerPadding
+                    )
+                }
             }
         }
     }

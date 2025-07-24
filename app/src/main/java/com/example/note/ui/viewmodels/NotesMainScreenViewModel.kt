@@ -27,10 +27,16 @@ class NotesMainScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(NotesMainScreenUiState())
     val uiState: StateFlow<NotesMainScreenUiState> = _uiState.asStateFlow()
 
+    private val _isSearchActive = MutableStateFlow(false)
+    val isSearchActive: StateFlow<Boolean> = _isSearchActive.asStateFlow()
+
     private var searchJob: Job? = null
 
     init {
         searchNotes("")
+    }
+    fun toggleSearch() {
+        _isSearchActive.value = !_isSearchActive.value
     }
 
     fun onSearchQueryChanged(query: String) {
