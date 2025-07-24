@@ -1,5 +1,6 @@
 package com.example.note.use_cases
 
+import androidx.compose.ui.text.input.TextFieldValue
 import com.example.note.data.repository.NotesRepository
 import com.example.note.domain.DecryptedNotes
 import com.example.note.ui.screens.NotesMainScreenUiState
@@ -12,13 +13,13 @@ import javax.inject.Inject
 class SearchNotesUseCase @Inject constructor(
     private val repository: NotesRepository
 ) {
-    operator fun invoke(query: String): Flow<NotesMainScreenUiState> {
+    operator fun invoke(query: TextFieldValue): Flow<NotesMainScreenUiState> {
         return repository.getAllNotes()
             .map { notes ->
-                val filteredNotes = if (query.isBlank()) {
+                val filteredNotes = if (query.text.isBlank()) {
                     notes
                 } else {
-                    notes.filter { it.title.contains(query, ignoreCase = true) }
+                    notes.filter { it.title.contains(query.text, ignoreCase = true) }
                 }
 
                 NotesMainScreenUiState(

@@ -1,5 +1,6 @@
 package com.example.note.ui.viewmodels
 
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.note.data.repository.NotesRepository
@@ -33,22 +34,23 @@ class NotesMainScreenViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     init {
-        searchNotes("")
+        searchNotes(_uiState.value.searchQuery)
     }
+
     fun toggleSearch() {
         _isSearchActive.value = !_isSearchActive.value
     }
 
-    fun onSearchQueryChanged(query: String) {
+    fun onSearchQueryChanged(query: TextFieldValue) {
         _uiState.update { it.copy(searchQuery = query) }
         searchNotes(query)
     }
 
-    private fun searchNotes(query: String) {
+    private fun searchNotes(query: TextFieldValue) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             searchNotesUseCase(query).collect { state ->
-                _uiState.value = state
+                _uiState.value = state.copy(searchQuery = query)
             }
         }
     }

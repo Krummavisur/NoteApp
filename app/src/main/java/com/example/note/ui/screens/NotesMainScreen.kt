@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.note.domain.DecryptedNotes
@@ -66,8 +67,8 @@ fun NotesMainScreen(
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(uiState.notes) { note ->
                     NoteItem(
@@ -113,9 +114,9 @@ fun NoteItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(12.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -205,7 +206,7 @@ fun AddNoteDialog(
 @Composable
 fun SearchNote(
     uiState: NotesMainScreenUiState,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (TextFieldValue) -> Unit
 ) {
     OutlinedTextField(
         value = uiState.searchQuery,
