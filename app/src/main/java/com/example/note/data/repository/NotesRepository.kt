@@ -1,12 +1,12 @@
 package com.example.note.data.repository
 
-import com.example.note.domain.DecryptedNotes
+import com.example.note.domain.Note
 import kotlinx.coroutines.flow.Flow
 
 interface NotesRepository {
-    fun getAllFavoriteNotes(): Flow<List<DecryptedNotes>>
-    fun getAllNotes(): Flow<List<DecryptedNotes>>
-    suspend fun getNoteById(id: Int): DecryptedNotes?
+    fun getAllFavoriteNotes(): Flow<List<Note>>
+    fun getAllNotes(): Flow<List<Note>>
+    suspend fun getNoteById(id: Int): Note?
     suspend fun addNote(title: String, content: String, isFavorite: Boolean = false)
     suspend fun deleteNote(noteId: Int)
     suspend fun toggleFavorite(noteId: Int)

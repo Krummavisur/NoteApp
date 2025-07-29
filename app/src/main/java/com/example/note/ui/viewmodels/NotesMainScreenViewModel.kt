@@ -4,6 +4,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.note.data.repository.NotesRepository
+import com.example.note.domain.Note
 import com.example.note.ui.screens.NotesMainScreenUiState
 import com.example.note.use_cases.AddNotesUseCase
 import com.example.note.use_cases.DeleteNotesUseCase
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale.filter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,14 +33,65 @@ class NotesMainScreenViewModel @Inject constructor(
     private val _isSearchActive = MutableStateFlow(false)
     val isSearchActive: StateFlow<Boolean> = _isSearchActive.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    private var allNotes: List<Note> = emptyList()
+
     private var searchJob: Job? = null
 
     init {
         searchNotes(_uiState.value.searchQuery)
     }
+    fun loadNotes() {
+        viewModelScope.launch {
+            repository.getAllNotes().collect { notes ->
+                allNotes = notes
+                _uiState.update {
+                    it.copy(notes = notes)
+                }
+            }
+        }
+    }
 
     fun toggleSearch() {
         _isSearchActive.value = !_isSearchActive.value
+    }
+
+    fun disableSearch() {
+        _isSearchActive.value = false
+        _searchQuery.value = ""
+        filterNotes()
+    }
+
+    private fun filterNotes() {
+        val query = _searchQuery.value.lowercase()
+        val filtered = if (query.isBlank()) {
+            allNotes
+        } else {
+            allNotes.filter {
+                it.title.contains(query, ignoreCase = true) ||
+                        it.content.contains(query, ignoreCase = true)
+            }
+        }
+        val sorted = filtered.sortedByDescending { it.isFavorite }
+
+        _uiState.update { current ->
+            current.copy(notes = sorted)
+        }
+    }
+
+    init {
+        observeNotes()
+    }
+
+    private fun observeNotes() {
+        viewModelScope.launch {
+            repository.getAllNotes().collect { notes ->
+                allNotes = notes
+                filterNotes()
+            }
+        }
     }
 
     fun onSearchQueryChanged(query: TextFieldValue) {

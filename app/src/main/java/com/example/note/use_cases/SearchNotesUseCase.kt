@@ -2,7 +2,6 @@ package com.example.note.use_cases
 
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.note.data.repository.NotesRepository
-import com.example.note.domain.DecryptedNotes
 import com.example.note.ui.screens.NotesMainScreenUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

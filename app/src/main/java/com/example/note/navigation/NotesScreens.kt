@@ -123,9 +123,6 @@ fun NotesApp(
             }
         }
     ) { innerPadding ->
-        Surface (
-            modifier = modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background) {
         AnimatedNavHost(
             navController = navController,
             startDestination = NotesScreens.MainScreen.route,
@@ -176,4 +173,3 @@ fun NotesApp(
             }
         }
     }
-}

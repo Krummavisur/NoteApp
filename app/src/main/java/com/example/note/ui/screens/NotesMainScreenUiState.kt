@@ -1,10 +1,10 @@
 package com.example.note.ui.screens
 
 import androidx.compose.ui.text.input.TextFieldValue
-import com.example.note.domain.DecryptedNotes
+import com.example.note.domain.Note
 
 data class NotesMainScreenUiState(
-    val notes: List<DecryptedNotes> = emptyList(),
+    val notes: List<Note> = emptyList(),
     val searchQuery: TextFieldValue = TextFieldValue(),
     val isLoading: Boolean = false,
     val error: String? = null

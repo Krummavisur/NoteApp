@@ -1,9 +1,9 @@
 package com.example.note.ui.screens
 
-import com.example.note.domain.DecryptedNotes
+import com.example.note.domain.Note
 
 data class NotesDetailsScreenUIState(
-    val note: DecryptedNotes? = null,
+    val note: Note? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
