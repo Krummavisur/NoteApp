@@ -12,7 +12,7 @@ fun NotesEntity.toDecryptedNote(cryptoManager: CryptoManager): Note? {
             title = title,
             content = decryptedContent,
             timestamp = timestamp,
-            isFavorite = isFavorite
+            isFinished = isFinished
         )
     } catch (e: Exception) {
         null

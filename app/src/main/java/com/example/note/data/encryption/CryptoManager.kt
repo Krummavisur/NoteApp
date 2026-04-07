@@ -16,8 +16,8 @@ class CryptoManager {
         private const val KEY_ALIAS = "secure_notes_key"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
         private const val TRANSFORMATION = "AES/GCM/NoPadding"
-        private const val IV_SIZE = 12 // 96 бит
-        private const val TAG_SIZE = 128 // бит
+        private const val IV_SIZE = 12
+        private const val TAG_SIZE = 128
     }
 
     init {

@@ -18,7 +18,7 @@ class LocalNotesRepository(
             list.mapNotNull { it.toDecryptedNote(cryptoManager) }
         }
 
-    override fun getAllFavoriteNotes(): Flow<List<Note>> =
+    override fun getAllFinishedNotes(): Flow<List<Note>> =
         notesDao.getAllFavoriteNotes().map { list ->
             list.mapNotNull { it.toDecryptedNote(cryptoManager) }
         }
@@ -27,13 +27,12 @@ class LocalNotesRepository(
         return notesDao.getNoteById(id)?.toDecryptedNote(cryptoManager)
     }
 
-    override suspend fun addNote(title: String, content: String, isFavorite: Boolean) {
+    override suspend fun addNote(title: String, content: String) {
         val encrypted = cryptoManager.encryptText(content)
         val note = NotesEntity(
             title = title,
             encryptedContent = encrypted,
             timestamp = System.currentTimeMillis(),
-            isFavorite = isFavorite
         )
         notesDao.insertNoteToFavorites(note)
     }
@@ -41,12 +40,6 @@ class LocalNotesRepository(
     override suspend fun deleteNote(noteId: Int) {
         val note = notesDao.getNoteById(noteId)
         note?.let { notesDao.deleteNoteFromFavorites(it) }
-    }
-
-    override suspend fun toggleFavorite(noteId: Int) {
-        val note = notesDao.getNoteById(noteId) ?: return
-        val updatedNote = note.copy(isFavorite = !note.isFavorite)
-        notesDao.insertNoteToFavorites(updatedNote)
     }
 
     override suspend fun updateNote(
@@ -66,5 +59,11 @@ class LocalNotesRepository(
         )
 
         notesDao.insertNoteToFavorites(updatedNote)
+    }
+
+    override suspend fun addToFinished(noteId: Int) {
+        val note = notesDao.getNoteById(noteId) ?: return
+        val finishedNote = note.copy(isFinished = !note.isFinished)
+        notesDao.insertToFinished(finishedNote)
     }
 }

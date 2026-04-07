@@ -9,5 +9,5 @@ data class NotesEntity (
     val title: String,
     val encryptedContent: String,
     val timestamp: Long,
-    val isFavorite: Boolean = false
+    val isFinished: Boolean = false
 )
