@@ -9,19 +9,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotesDao {
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    suspend fun insertToFinished(note: NotesEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNote(note: NotesEntity)
 
     @Delete
-    suspend fun deleteNoteFromFavorites(noteDao: NotesEntity)
+    suspend fun deleteNote(note: NotesEntity)
 
-    @Query("SELECT * FROM note")
+    @Query("SELECT * FROM note WHERE isFinished = 1")
     fun getAllFinishedNotes(): Flow<List<NotesEntity>>
 
+    @Query("SELECT * FROM note WHERE isFinished = 0")
+    fun getAllActiveNotes(): Flow<List<NotesEntity>>
 
     @Query("SELECT * FROM note WHERE id = :noteId")
     suspend fun getNoteById(noteId: Int): NotesEntity?
-
-    @Query("SELECT * FROM note ORDER BY timestamp DESC")
-    fun getAllNotes(): Flow<List<NotesEntity>>
 }

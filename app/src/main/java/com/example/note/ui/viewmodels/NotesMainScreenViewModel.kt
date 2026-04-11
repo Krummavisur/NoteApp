@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Locale.filter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -74,7 +73,7 @@ class NotesMainScreenViewModel @Inject constructor(
                         it.content.contains(query, ignoreCase = true)
             }
         }
-        val sorted = filtered.sortedByDescending { it.isFavorite }
+        val sorted = filtered.sortedByDescending { it.isFinished }
 
         _uiState.update { current ->
             current.copy(notes = sorted)
@@ -134,9 +133,9 @@ class NotesMainScreenViewModel @Inject constructor(
         _uiState.update { it.copy(error = null) }
     }
 
-    fun toggleFavorite(noteId: Int) {
+    fun toggleFinished(noteId: Int) {
         viewModelScope.launch {
-            repository.toggleFavorite(noteId)
+            repository.toggleFinished(noteId)
         }
     }
 }

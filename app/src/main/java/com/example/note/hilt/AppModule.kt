@@ -7,6 +7,7 @@ import com.example.note.data.local.NotesDao
 import com.example.note.data.repository.LocalNotesRepository
 import com.example.note.data.repository.NotesRepository
 import com.example.note.data.encryption.CryptoManager
+import com.example.note.data.local.MIGRATION_1_2
 import dagger.Module
 import javax.inject.Singleton
 import dagger.Provides
@@ -29,7 +30,9 @@ object AppModule {
             context,
             NotesAppDatabase::class.java,
             "note_db"
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides

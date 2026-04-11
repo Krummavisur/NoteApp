@@ -18,9 +18,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -98,7 +97,7 @@ fun NotesMainScreen(
                             note = note,
                             onClick = { onNoteClick(note.id) },
                             onDeleteClick = { viewModel.deleteNote(note.id) },
-                            onFavoriteClick = { viewModel.toggleFavorite(note.id) }
+                            onFinishedClick = { viewModel.toggleFinished(note.id) }
                         )
                     }
                 }
@@ -132,7 +131,7 @@ fun NoteItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
-    onFavoriteClick: () -> Unit = {}
+    onFinishedClick: () -> Unit = {}
 ) {
     val date = remember(note.timestamp) {
         SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date(note.timestamp))
@@ -157,9 +156,9 @@ fun NoteItem(
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
                 )
-                IconButton(onClick = onFavoriteClick) {
+                IconButton(onClick = onFinishedClick) {
                     Icon(
-                        imageVector = if (note.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        imageVector = if (note.isFinished) Icons.Default.Favorite else Icons.Default.AddTask,
                         contentDescription = "Favorite"
                     )
                 }

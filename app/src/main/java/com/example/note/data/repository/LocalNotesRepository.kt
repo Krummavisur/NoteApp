@@ -14,12 +14,12 @@ class LocalNotesRepository(
 ) : NotesRepository {
 
     override fun getAllNotes(): Flow<List<Note>> =
-        notesDao.getAllNotes().map { list ->
+        notesDao.getAllActiveNotes().map { list ->
             list.mapNotNull { it.toDecryptedNote(cryptoManager) }
         }
 
     override fun getAllFinishedNotes(): Flow<List<Note>> =
-        notesDao.getAllFavoriteNotes().map { list ->
+        notesDao.getAllFinishedNotes().map { list ->
             list.mapNotNull { it.toDecryptedNote(cryptoManager) }
         }
 
@@ -27,26 +27,26 @@ class LocalNotesRepository(
         return notesDao.getNoteById(id)?.toDecryptedNote(cryptoManager)
     }
 
-    override suspend fun addNote(title: String, content: String) {
+    override suspend fun addNote(title: String, content: String, isFinished: Boolean) {
         val encrypted = cryptoManager.encryptText(content)
         val note = NotesEntity(
             title = title,
             encryptedContent = encrypted,
             timestamp = System.currentTimeMillis(),
         )
-        notesDao.insertNoteToFavorites(note)
+        notesDao.insertNote(note)
     }
 
     override suspend fun deleteNote(noteId: Int) {
         val note = notesDao.getNoteById(noteId)
-        note?.let { notesDao.deleteNoteFromFavorites(it) }
+        note?.let { notesDao.deleteNote(it) }
     }
 
     override suspend fun updateNote(
         noteId: Int,
         title: String,
         content: String,
-        isFavorite: Boolean
+        isFinished: Boolean
     ) {
         val existingNote = notesDao.getNoteById(noteId) ?: return
         val encrypted = cryptoManager.encryptText(content)
@@ -54,16 +54,16 @@ class LocalNotesRepository(
         val updatedNote = existingNote.copy(
             title = title,
             encryptedContent = encrypted,
-            isFavorite = isFavorite,
+            isFinished = isFinished,
             timestamp = System.currentTimeMillis()
         )
 
-        notesDao.insertNoteToFavorites(updatedNote)
+        notesDao.insertNote(updatedNote)
     }
 
-    override suspend fun addToFinished(noteId: Int) {
+    override suspend fun toggleFinished(noteId: Int) {
         val note = notesDao.getNoteById(noteId) ?: return
         val finishedNote = note.copy(isFinished = !note.isFinished)
-        notesDao.insertToFinished(finishedNote)
+        notesDao.insertNote(finishedNote)
     }
 }

@@ -9,13 +9,13 @@ class AddNotesUseCase @Inject constructor(
     suspend operator fun invoke(
         title: String,
         content: String,
-        isFavorite: Boolean,
+        isFinished: Boolean,
         noteId: Int? = null
     ) {
         if (noteId == null) {
-            repository.addNote(title,content,isFavorite)
+            repository.addNote(title,content,isFinished)
         } else {
-        repository.updateNote(noteId, title, content, isFavorite)
+        repository.updateNote(noteId, title, content, isFinished)
         }
     }
 }
