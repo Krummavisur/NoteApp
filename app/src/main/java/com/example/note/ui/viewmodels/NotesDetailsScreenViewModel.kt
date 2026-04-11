@@ -4,22 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.note.data.repository.NotesRepository
 import com.example.note.ui.screens.NotesDetailsScreenUIState
-import com.example.note.use_cases.AddNotesUseCase
-import com.example.note.use_cases.GetNoteByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NotesDetailsScreenViewModel @Inject constructor(
-    private val getNoteByIdUseCase: GetNoteByIdUseCase,
-    private val addNotesUseCase: AddNotesUseCase
+    private val repository: NotesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotesDetailsScreenUIState())
@@ -27,23 +22,24 @@ class NotesDetailsScreenViewModel @Inject constructor(
 
     fun loadNote(noteId: Int) {
         viewModelScope.launch {
-            getNoteByIdUseCase(noteId)
-                .onStart {
-                    _uiState.value = NotesDetailsScreenUIState(isLoading = true)
-                }
-                .catch { e ->
-                    _uiState.value = NotesDetailsScreenUIState(error = e.message ?: "Unknown error")
-                }
-                .collect { note ->
-                    _uiState.value = NotesDetailsScreenUIState(note = note)
-                }
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                val note = repository.getNoteById(noteId)
+                _uiState.update { it.copy(note = note, isLoading = false) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message ?: "Unknown error", isLoading = false) }
+            }
         }
     }
 
-    fun saveNote(noteId: Int?, title: String, content: String, isFavorite: Boolean = false) {
+    fun saveNote(noteId: Int?, title: String, content: String, isFinished: Boolean = false) {
         viewModelScope.launch {
             try {
-                addNotesUseCase(title, content, isFavorite, noteId)
+                if (noteId == null) {
+                    repository.addNote(title, content, isFinished)
+                } else {
+                    repository.updateNote(noteId, title, content, isFinished)
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             }
