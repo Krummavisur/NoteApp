@@ -27,17 +27,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.note.ui.screens.NotesDetailsScreen
+import com.example.note.ui.screens.NotesFinishedScreen
 import com.example.note.ui.screens.NotesMainScreen
 import com.example.note.ui.viewmodels.NotesDetailsScreenViewModel
+import com.example.note.ui.viewmodels.NotesFinishedScreenViewModel
 import com.example.note.ui.viewmodels.NotesMainScreenViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 
-enum class NotesScreens (val route: String) {
+enum class NotesScreens(val route: String) {
     MainScreen(route = "main"),
-    DetailsScreen(route = "details/{noteId}");
+    DetailsScreen(route = "details/{noteId}"),
+    FinishedNotesScreen(route = "finishedNotes");
 
     companion object {
         fun fromRoute(route: String?): NotesScreens =
@@ -52,7 +55,7 @@ fun NotesTopAppBar(
     showBackButton: Boolean,
     onBackClick: () -> Unit,
     showSearchIcon: Boolean,
-    onSearchIconClick: () -> Unit
+    onSearchIconClick: () -> Unit,
 ) {
     TopAppBar(
         title = { Text(title) },
@@ -84,6 +87,7 @@ fun NotesTopAppBar(
         )
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun NotesApp(
@@ -103,7 +107,7 @@ fun NotesApp(
                         showBackButton = false,
                         onBackClick = {},
                         showSearchIcon = true,
-                        onSearchIconClick = {viewModel.toggleSearch()}
+                        onSearchIconClick = { viewModel.toggleSearch() }
                     )
                 }
 
@@ -114,6 +118,16 @@ fun NotesApp(
                         onBackClick = { navController.popBackStack() },
                         showSearchIcon = false,
                         onSearchIconClick = {}
+                    )
+                }
+
+                NotesScreens.FinishedNotesScreen -> {
+                    NotesTopAppBar(
+                        title = "Выполненные задачи",
+                        showBackButton = true,
+                        onBackClick = { navController.popBackStack() },
+                        showSearchIcon = true,
+                        onSearchIconClick = { viewModel.toggleSearch() }
                     )
                 }
             }
@@ -151,7 +165,8 @@ fun NotesApp(
                 val notesMainScreenViewModel: NotesMainScreenViewModel = hiltViewModel()
                 NotesMainScreen(
                     onNoteClick = { noteId ->
-                        navController.navigate(route = "details/${noteId}") },
+                        navController.navigate(route = "details/${noteId}")
+                    },
                     viewModel = notesMainScreenViewModel,
                     isSearchActive = isSearchActive,
                     contentPadding = innerPadding
@@ -159,13 +174,24 @@ fun NotesApp(
             }
             composable(NotesScreens.DetailsScreen.route) { backStackEntry ->
                 val notesDetailsScreenViewModel: NotesDetailsScreenViewModel = hiltViewModel()
-                val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull() ?: return@composable
+                val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull()
+                    ?: return@composable
                 NotesDetailsScreen(
                     viewModel = notesDetailsScreenViewModel,
                     contentPadding = innerPadding,
                     noteId = noteId
-                    )
-                }
+                )
+            }
+            composable(NotesScreens.FinishedNotesScreen.route) { backStackEntry ->
+                val notesFinishedScreenViewModel: NotesFinishedScreenViewModel = hiltViewModel()
+                NotesFinishedScreen(
+                    viewModel = notesFinishedScreenViewModel,
+                    contentPadding = innerPadding,
+                    onNoteClick = { noteId ->
+                        navController.navigate(route = "details/${noteId}")
+                    },
+                )
             }
         }
     }
+}

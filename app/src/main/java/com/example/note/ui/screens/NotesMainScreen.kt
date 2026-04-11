@@ -58,7 +58,7 @@ fun NotesMainScreen(
     viewModel: NotesMainScreenViewModel,
     onNoteClick: (Int) -> Unit,
     isSearchActive: Boolean,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
@@ -131,7 +131,7 @@ fun NoteItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
-    onFinishedClick: () -> Unit = {}
+    onFinishedClick: () -> Unit = {},
 ) {
     val date = remember(note.timestamp) {
         SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date(note.timestamp))
@@ -139,13 +139,15 @@ fun NoteItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start =  8.dp)
+            .padding(start = 8.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier
-            .padding(start = 12.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(start = 12.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = note.title,
@@ -188,7 +190,7 @@ fun NoteItem(
 @Composable
 fun AddNoteDialog(
     onDismiss: () -> Unit,
-    onAdd: (title: String, content: String) -> Unit
+    onAdd: (title: String, content: String) -> Unit,
 ) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
@@ -235,22 +237,6 @@ fun AddNoteDialog(
 }
 
 @Composable
-fun SearchNote(
-    uiState: NotesMainScreenUiState,
-    onQueryChange: (TextFieldValue) -> Unit
-) {
-    OutlinedTextField(
-        value = uiState.searchQuery,
-        onValueChange = onQueryChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        placeholder = { Text("Поиск...") },
-        singleLine = true
-    )
-}
-
-@Composable
 fun CancelButton(
     modifier: Modifier = Modifier,
     onCancelClick: () -> Unit,
@@ -261,4 +247,20 @@ fun CancelButton(
     ) {
         Text("Отмена")
     }
+}
+
+@Composable
+fun SearchNote(
+    uiState: NotesMainScreenUiState,
+    onQueryChange: (TextFieldValue) -> Unit,
+) {
+    OutlinedTextField(
+        value = uiState.searchQuery,
+        onValueChange = onQueryChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        placeholder = { Text("Поиск...") },
+        singleLine = true
+    )
 }
