@@ -81,6 +81,7 @@ fun NotesDetailsScreen(
         }
     }
 }
+
 @Composable
 fun TitleTextField(
     title: String,

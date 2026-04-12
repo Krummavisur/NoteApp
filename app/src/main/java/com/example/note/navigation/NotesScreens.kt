@@ -5,8 +5,10 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +58,8 @@ fun NotesTopAppBar(
     onBackClick: () -> Unit,
     showSearchIcon: Boolean,
     onSearchIconClick: () -> Unit,
+    showFinishedIcon: Boolean,
+    onFinishedClick: () -> Unit
 ) {
     TopAppBar(
         title = { Text(title) },
@@ -75,6 +79,18 @@ fun NotesTopAppBar(
                     Icon(
                         contentDescription = "Поиск",
                         imageVector = Icons.Filled.Search,
+                        tint = Color.LightGray,
+                        modifier = Modifier
+                            .size(40.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(20.dp))
+            if (showFinishedIcon) {
+                IconButton(onClick = onFinishedClick) {
+                    Icon(
+                        contentDescription = "Завершенные задачи",
+                        imageVector = Icons.Filled.AddTask,
                         tint = Color.LightGray,
                         modifier = Modifier
                             .size(40.dp)
@@ -107,7 +123,9 @@ fun NotesApp(
                         showBackButton = false,
                         onBackClick = {},
                         showSearchIcon = true,
-                        onSearchIconClick = { viewModel.toggleSearch() }
+                        onSearchIconClick = { viewModel.toggleSearch() },
+                        onFinishedClick = {navController.navigate(NotesScreens.FinishedNotesScreen.route)},
+                        showFinishedIcon = true
                     )
                 }
 
@@ -117,7 +135,9 @@ fun NotesApp(
                         showBackButton = true,
                         onBackClick = { navController.popBackStack() },
                         showSearchIcon = false,
-                        onSearchIconClick = {}
+                        onSearchIconClick = {viewModel.toggleSearch()},
+                        onFinishedClick = {},
+                        showFinishedIcon = false
                     )
                 }
 
@@ -127,7 +147,9 @@ fun NotesApp(
                         showBackButton = true,
                         onBackClick = { navController.popBackStack() },
                         showSearchIcon = true,
-                        onSearchIconClick = { viewModel.toggleSearch() }
+                        onSearchIconClick = { viewModel.toggleSearch() },
+                        onFinishedClick = {},
+                        showFinishedIcon = false
                     )
                 }
             }
@@ -190,6 +212,7 @@ fun NotesApp(
                     onNoteClick = { noteId ->
                         navController.navigate(route = "details/${noteId}")
                     },
+                    isSearchActive = isSearchActive
                 )
             }
         }

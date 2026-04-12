@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -160,7 +159,7 @@ fun NoteItem(
                 )
                 IconButton(onClick = onFinishedClick) {
                     Icon(
-                        imageVector = if (note.isFinished) Icons.Default.Favorite else Icons.Default.AddTask,
+                        imageVector = if (note.isFinished) Icons.Default.AddTask else Icons.Default.AddTask,
                         contentDescription = "Favorite"
                     )
                 }

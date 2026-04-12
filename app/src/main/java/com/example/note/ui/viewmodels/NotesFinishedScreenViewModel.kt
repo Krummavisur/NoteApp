@@ -21,7 +21,8 @@ class NotesFinishedScreenViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(NotesFinishedScreenUiState())
     val uiState: StateFlow<NotesFinishedScreenUiState> = _uiState.asStateFlow()
-
+    private val _isSearchActive = MutableStateFlow(false)
+    val isSearchActive: StateFlow<Boolean> = _isSearchActive.asStateFlow()
     private val _searchQuery = MutableStateFlow(TextFieldValue(""))
 
     init {
@@ -49,9 +50,18 @@ class NotesFinishedScreenViewModel @Inject constructor(
         }
     }
 
+    fun loadNotes() {
+        _searchQuery.value = TextFieldValue("")
+    }
+
     fun onSearchQueryChanged(query: TextFieldValue) {
         _searchQuery.value = query
         _uiState.update { it.copy(searchQuery = query) }
+    }
+
+    fun disableSearch() {
+        _isSearchActive.value = false
+        _searchQuery.value = TextFieldValue("")
     }
 
     fun deleteNote(noteId: Int) {
