@@ -35,6 +35,7 @@ fun NotesFinishedScreen(
     isSearchActive: Boolean
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isSearchActive by viewModel.isSearchActive.collectAsState()
     var cancelButtonClicked by remember { mutableStateOf(false) }
 
     Surface(

@@ -8,7 +8,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 @Database(entities = [NotesEntity::class], version = 2)
 abstract class NotesAppDatabase: RoomDatabase() {
     abstract fun noteDao(): NotesDao
-
 }
 
 val MIGRATION_1_2 = object : Migration(1, 2) {

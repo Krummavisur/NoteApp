@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class NotesEntity (
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
-    val encryptedContent: String,
+    val content: String,
     val timestamp: Long,
     val isFinished: Boolean = false
 )

@@ -6,7 +6,6 @@ import com.example.note.data.local.NotesAppDatabase
 import com.example.note.data.local.NotesDao
 import com.example.note.data.repository.LocalNotesRepository
 import com.example.note.data.repository.NotesRepository
-import com.example.note.data.encryption.CryptoManager
 import com.example.note.data.local.MIGRATION_1_2
 import dagger.Module
 import javax.inject.Singleton
@@ -18,11 +17,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    @Provides
-    @Singleton
-    fun provideCryptoManager(): CryptoManager = CryptoManager()
-
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): NotesAppDatabase {
@@ -42,8 +36,7 @@ object AppModule {
     @Singleton
     fun provideNotesRepository(
         dao: NotesDao,
-        cryptoManager: CryptoManager
     ): NotesRepository {
-        return LocalNotesRepository(dao, cryptoManager)
+        return LocalNotesRepository(dao)
     }
 }
