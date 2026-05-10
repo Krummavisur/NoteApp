@@ -146,8 +146,8 @@ fun NotesApp(
                         title = "Выполненные задачи",
                         showBackButton = true,
                         onBackClick = { navController.popBackStack() },
-                        showSearchIcon = true,
-                        onSearchIconClick = { viewModel.toggleSearch() },
+                        showSearchIcon = false,
+                        onSearchIconClick = {},
                         onFinishedClick = {},
                         showFinishedIcon = false
                     )

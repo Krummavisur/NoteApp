@@ -28,10 +28,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,8 +63,22 @@ fun NotesMainScreen(
     contentPadding: PaddingValues,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
     var showAddDialog by remember { mutableStateOf(false) }
-    var cancelButtonClicked by remember { mutableStateOf(false) }
+
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { error ->
+
+            snackBarHostState.showSnackbar(
+                message = error
+            )
+
+            viewModel.clearError()
+        }
+    }
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -71,32 +88,44 @@ fun NotesMainScreen(
                 .fillMaxSize()
                 .padding(contentPadding)
         ) {
+
             Column(modifier = Modifier.fillMaxSize()) {
+
                 if (isSearchActive) {
+
                     SearchNote(
                         uiState = uiState,
                         onQueryChange = viewModel::onSearchQueryChanged
                     )
+
                     Spacer(Modifier.width(8.dp))
 
-                    CancelButton(onCancelClick = {
-                        cancelButtonClicked = true
-                        viewModel.disableSearch()
-                        viewModel.loadNotes()
-                    })
+                    CancelButton(
+                        onCancelClick = {
+                            viewModel.disableSearch()
+                            viewModel.loadNotes()
+                        }
+                    )
                 }
+
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
+
                     items(uiState.notes) { note ->
+
                         NoteItem(
                             note = note,
                             onClick = { onNoteClick(note.id) },
-                            onDeleteClick = { viewModel.deleteNote(note.id) },
-                            onFinishedClick = { viewModel.toggleFinished(note.id) }
+                            onDeleteClick = {
+                                viewModel.deleteNote(note.id)
+                            },
+                            onFinishedClick = {
+                                viewModel.toggleFinished(note.id)
+                            }
                         )
                     }
                 }
@@ -108,14 +137,29 @@ fun NotesMainScreen(
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Note")
+
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Note"
+                )
             }
 
+            SnackbarHost(
+                hostState = snackBarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 80.dp)
+            )
+
             if (showAddDialog) {
+
                 AddNoteDialog(
                     onDismiss = { showAddDialog = false },
+
                     onAdd = { title, content ->
+
                         viewModel.addNote(title, content)
+
                         showAddDialog = false
                     }
                 )
