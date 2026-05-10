@@ -212,7 +212,6 @@ fun NotesApp(
                     onNoteClick = { noteId ->
                         navController.navigate(route = "details/${noteId}")
                     },
-                    isSearchActive = isSearchActive
                 )
             }
         }

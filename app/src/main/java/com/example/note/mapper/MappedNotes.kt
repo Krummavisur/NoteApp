@@ -1,5 +1,6 @@
 package com.example.note.mapper
 
+import android.util.Log
 import com.example.note.data.local.NotesEntity
 import com.example.note.domain.Note
 
@@ -13,6 +14,7 @@ fun NotesEntity.toMappedNote(): Note? {
             isFinished = isFinished
         )
     } catch (e: Exception) {
+        Log.e("NotesMapper", "Error mapping", e)
         null
     }
 }

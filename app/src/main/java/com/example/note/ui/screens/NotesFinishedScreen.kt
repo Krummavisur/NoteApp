@@ -32,7 +32,6 @@ fun NotesFinishedScreen(
     viewModel: NotesFinishedScreenViewModel = hiltViewModel(),
     onNoteClick: (Int) -> Unit,
     contentPadding: PaddingValues,
-    isSearchActive: Boolean
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isSearchActive by viewModel.isSearchActive.collectAsState()
